@@ -44,3 +44,14 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.email
+
+
+class UserProfile(models.Model):
+    email = models.OneToOneField(User, on_delete=models.CASCADE, blank=True, null=True, related_name='user_profile')
+    username = models.CharField(max_length=250, null=True, blank=True)
+    phone_number = models.IntegerField(blank=True, null=True)
+    address = models.CharField(max_length=250, default="")
+    cnic = models.CharField(max_length=100, unique=True)
+
+    def __str__(self):
+        return self.username
