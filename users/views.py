@@ -52,3 +52,16 @@ class PostViewSet(viewsets.ModelViewSet):
             return Response({
                 'message': 'you have no rights for edit',
             }, status=status.HTTP_400_BAD_REQUEST)
+
+
+class PostAnonymousViewSet(viewsets.ModelViewSet):
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
+
+    def get_anonymous_post(self, request):
+        get_all_post = Post.objects.all()
+        serializer = PostSerializer(get_all_post, many=True)
+        return Response({
+            "message": "shown all posts data for anonymous user",
+            "data": serializer.data
+        }, status=status.HTTP_200_OK)
