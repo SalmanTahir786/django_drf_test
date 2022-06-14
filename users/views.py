@@ -2,8 +2,8 @@ from rest_framework import generics
 from rest_framework import viewsets, permissions, authentication, status
 from rest_framework.response import Response
 
-from .models import UserProfile, Post
-from .serializers import UserProfileSerializer, PostSerializer, RegisterSerializer
+from .models import UserProfile, Post, User
+from .serializers import UserProfileSerializer, PostSerializer, RegisterSerializer, UserSerializer
 
 
 class RegisterUserAPIView(generics.CreateAPIView):
@@ -26,6 +26,27 @@ class UserProfileViewSet(viewsets.ModelViewSet):
         return Response({
             'message': 'user profile updated successfully',
             'data': serializer.data
+        }, status=status.HTTP_200_OK)
+
+    def update_user_userprofile(self, request, *args, **kwargs):
+        import pdb;
+        pdb.set_trace()
+        given_data = request.data
+        instance = self.get_object()
+        profile_serializer = self.serializer_class(instance, data=given_data, partial=True)
+        profile_serializer.is_valid(raise_exception=True)
+        self.perform_update(profile_serializer)
+        user_id = instance.email.id
+        get_user = User.objects.filter(id=user_id)
+        user_serializer = UserSerializer(get_user.first(), data=given_data, partial=True)
+        user_serializer.is_valid(raise_exception=True)
+        self.perform_update(user_serializer)
+        return Response({
+            'message': 'user and user_profile both models update successfully',
+            'data': {
+                'user_data': user_serializer.data,
+                'user_profile': profile_serializer.data
+            }
         }, status=status.HTTP_200_OK)
 
 
