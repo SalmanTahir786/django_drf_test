@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
 from django.db import models
@@ -47,11 +49,28 @@ class User(AbstractUser):
 
 
 class UserProfile(models.Model):
+    CHOICES = (
+        ("MALE", "male"),
+        ("FEMALE", "female"),
+    )
     email = models.OneToOneField(User, on_delete=models.CASCADE, blank=True, null=True, related_name='user_profile')
     username = models.CharField(max_length=250, null=True, blank=True)
     phone_number = models.IntegerField(blank=True, null=True)
     address = models.CharField(max_length=250, default="")
     cnic = models.CharField(max_length=100, unique=True)
+    gender = models.CharField(max_length=200, choices=CHOICES, default=None)
 
     def __str__(self):
         return self.username
+
+
+class Post(models.Model):
+    author = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
+    title = models.CharField(max_length=250, null=True, blank=True)
+    categorie = models.CharField(max_length=250, null=True, blank=True)
+    content = models.TextField()
+    created_at = models.DateTimeField(default=datetime.now())
+
+    def __str__(self):
+        return self.categorie
+
